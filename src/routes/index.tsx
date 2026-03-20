@@ -1,5 +1,6 @@
 import { Navigate, useRoutes } from 'react-router-dom';
 import { ROUTES } from '../constants/routes';
+import { ProtectedRoute, PublicRoute } from '../features/auth/guards';
 import AnalyticsPage from '../pages/AnalyticsPage';
 import DashboardPage from '../pages/DashboardPage';
 import LoginPage from '../pages/LoginPage';
@@ -10,19 +11,35 @@ function AppRoutes() {
   const element = useRoutes([
     {
       path: ROUTES.LOGIN,
-      element: <LoginPage />,
+      element: (
+        <PublicRoute>
+          <LoginPage />
+        </PublicRoute>
+      ),
     },
     {
       path: ROUTES.DASHBOARD,
-      element: <DashboardPage />,
+      element: (
+        <ProtectedRoute>
+          <DashboardPage />
+        </ProtectedRoute>
+      ),
     },
     {
       path: ROUTES.ANALYTICS,
-      element: <AnalyticsPage />,
+      element: (
+        <ProtectedRoute>
+          <AnalyticsPage />
+        </ProtectedRoute>
+      ),
     },
     {
       path: ROUTES.PATIENT_DETAILS,
-      element: <PatientDetailsPage />,
+      element: (
+        <ProtectedRoute>
+          <PatientDetailsPage />
+        </ProtectedRoute>
+      ),
     },
     {
       path: '/home',

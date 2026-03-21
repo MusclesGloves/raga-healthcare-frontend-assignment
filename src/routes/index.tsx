@@ -1,12 +1,20 @@
+import { lazy, Suspense } from 'react';
 import { Navigate, useRoutes } from 'react-router-dom';
+
 import AppShell from '../components/layout/AppShell';
+import PageLoader from '../components/common/PageLoader';
 import { ROUTES } from '../constants/routes';
 import { ProtectedRoute, PublicRoute } from '../features/auth/guards';
-import AnalyticsPage from '../pages/AnalyticsPage';
-import DashboardPage from '../pages/DashboardPage';
-import LoginPage from '../pages/LoginPage';
-import NotFoundPage from '../pages/NotFoundPage';
-import PatientDetailsPage from '../pages/PatientDetailsPage';
+
+const LoginPage = lazy(() => import('../pages/LoginPage'));
+const DashboardPage = lazy(() => import('../pages/DashboardPage'));
+const AnalyticsPage = lazy(() => import('../pages/AnalyticsPage'));
+const PatientDetailsPage = lazy(() => import('../pages/PatientDetailsPage'));
+const NotFoundPage = lazy(() => import('../pages/NotFoundPage'));
+
+function withSuspense(element: React.ReactNode) {
+  return <Suspense fallback={<PageLoader />}>{element}</Suspense>;
+}
 
 function AppRoutes() {
   const element = useRoutes([
@@ -14,7 +22,7 @@ function AppRoutes() {
       path: ROUTES.LOGIN,
       element: (
         <PublicRoute>
-          <LoginPage />
+          {withSuspense(<LoginPage />)}
         </PublicRoute>
       ),
     },
@@ -27,15 +35,15 @@ function AppRoutes() {
       children: [
         {
           path: ROUTES.DASHBOARD,
-          element: <DashboardPage />,
+          element: withSuspense(<DashboardPage />),
         },
         {
           path: ROUTES.ANALYTICS,
-          element: <AnalyticsPage />,
+          element: withSuspense(<AnalyticsPage />),
         },
         {
           path: ROUTES.PATIENT_DETAILS,
-          element: <PatientDetailsPage />,
+          element: withSuspense(<PatientDetailsPage />),
         },
       ],
     },
@@ -45,7 +53,7 @@ function AppRoutes() {
     },
     {
       path: '*',
-      element: <NotFoundPage />,
+      element: withSuspense(<NotFoundPage />),
     },
   ]);
 

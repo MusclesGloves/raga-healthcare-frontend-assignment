@@ -1,16 +1,13 @@
 import { useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import PageHeader from '../components/common/PageHeader';
-import PatientCollection from '../features/patients/components/PatientCollection';
-import PatientInfoSection from '../features/patients/components/PatientInfoSection';
-import ViewToggle from '../features/patients/components/ViewToggle';
+import StatusBadge from '../components/common/StatusBadge';
+import {
+  PatientCollection,
+  PatientInfoSection,
+  ViewToggle,
+} from '../features/patients/components';
 import { usePatientStore } from '../features/patients/store';
-
-const statusPillStyles = {
-  stable: 'bg-emerald-100 text-emerald-700',
-  attention: 'bg-amber-100 text-amber-700',
-  critical: 'bg-rose-100 text-rose-700',
-};
 
 function PatientDetailsPage() {
   const navigate = useNavigate();
@@ -78,13 +75,10 @@ function PatientDetailsPage() {
             <div>
               <div className="flex flex-wrap items-center gap-3">
                 <h2 className="text-2xl font-bold">{selectedPatient.fullName}</h2>
-                <span
-                  className={`inline-flex rounded-full px-3 py-1 text-xs font-semibold capitalize ${
-                    statusPillStyles[selectedPatient.status]
-                  }`}
-                >
-                  {selectedPatient.status}
-                </span>
+                <StatusBadge
+                  label={selectedPatient.status}
+                  variant={selectedPatient.status}
+                />
               </div>
 
               <p className="mt-2 text-sm text-slate-300">
@@ -235,7 +229,10 @@ function PatientDetailsPage() {
         >
           <div className="space-y-3">
             {selectedPatient.recentVisits.map((visit) => (
-              <div key={`${visit.date}-${visit.reason}`} className="rounded-2xl bg-slate-50 p-4">
+              <div
+                key={`${visit.date}-${visit.reason}`}
+                className="rounded-2xl bg-slate-50 p-4"
+              >
                 <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
                   <p className="font-semibold text-slate-900">{visit.department}</p>
                   <span className="text-xs font-medium uppercase tracking-wide text-slate-400">

@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react';
-import { NavLink, Outlet, useNavigate } from 'react-router-dom';
+import { NavLink, Outlet, useLocation, useNavigate } from 'react-router-dom';
 import {
   LayoutDashboard,
   BarChart3,
@@ -12,7 +12,7 @@ import { signOut } from 'firebase/auth';
 import PageContainer from './PageContainer';
 import { auth } from '../../lib/firebase';
 import { useAuthStore } from '../../features/auth/store';
-import NotificationPanel from '../../features/notifications/components/NotificationPanel';
+import { NotificationPanel } from '../../features/notifications/components';
 import { useNotificationStore } from '../../features/notifications/store';
 import { showBrowserNotification } from '../../features/notifications/utils/browserNotifications';
 
@@ -36,6 +36,7 @@ const navigationItems = [
 
 function AppShell() {
   const navigate = useNavigate();
+  const location = useLocation();
   const user = useAuthStore((state) => state.user);
 
   const notifications = useNotificationStore((state) => state.notifications);
@@ -109,17 +110,21 @@ function AppShell() {
                 {navigationItems.map((item) => {
                   const Icon = item.icon;
 
+                  const isPatientsRoute =
+                    item.label === 'Patients' && location.pathname.startsWith('/patients');
+
                   return (
                     <NavLink
                       key={item.to}
                       to={item.to}
-                      className={({ isActive }) =>
-                        `flex items-center gap-3 rounded-2xl px-4 py-3 text-sm font-medium transition ${
-                          isActive
+                      className={({ isActive }) => {
+                        const shouldBeActive = isActive || isPatientsRoute;
+
+                        return `flex items-center gap-3 rounded-2xl px-4 py-3 text-sm font-medium transition ${shouldBeActive
                             ? 'bg-slate-900 text-white shadow-sm'
                             : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900'
-                        }`
-                      }
+                          }`;
+                      }}
                     >
                       <Icon size={18} />
                       <span>{item.label}</span>

@@ -1,4 +1,5 @@
-import type { AppNotification, NotificationSeverity } from '../types';
+import StatusBadge from '../../../components/common/StatusBadge';
+import type { AppNotification } from '../types';
 
 type NotificationPanelProps = {
   notifications: AppNotification[];
@@ -7,12 +8,6 @@ type NotificationPanelProps = {
   onMarkAllAsRead: () => void;
   onRequestPermission: () => void;
   onTriggerDemoAlert: () => void;
-};
-
-const severityStyles: Record<NotificationSeverity, string> = {
-  info: 'bg-sky-100 text-sky-700',
-  warning: 'bg-amber-100 text-amber-700',
-  critical: 'bg-rose-100 text-rose-700',
 };
 
 function NotificationPanel({
@@ -89,11 +84,10 @@ function NotificationPanel({
                   </p>
                 </div>
 
-                <span
-                  className={`inline-flex rounded-full px-3 py-1 text-xs font-semibold ${severityStyles[notification.severity]}`}
-                >
-                  {notification.severity}
-                </span>
+                <StatusBadge
+                  label={notification.severity}
+                  variant={notification.severity}
+                />
               </div>
 
               <p className="mt-3 text-xs font-medium uppercase tracking-wide text-slate-400">

@@ -1,16 +1,11 @@
-import type { PatientRecord, PatientStatus } from '../types';
+import StatusBadge from '../../../components/common/StatusBadge';
+import type { PatientRecord } from '../types';
 
 type PatientCollectionProps = {
   patients: PatientRecord[];
   selectedPatientId: number | null;
   viewMode: 'grid' | 'list';
   onSelectPatient: (id: number) => void;
-};
-
-const statusStyles: Record<PatientStatus, string> = {
-  stable: 'bg-emerald-100 text-emerald-700',
-  attention: 'bg-amber-100 text-amber-700',
-  critical: 'bg-rose-100 text-rose-700',
 };
 
 function PatientCollection({
@@ -67,11 +62,10 @@ function PatientCollection({
                       {patient.physician}
                     </td>
                     <td className="px-4 py-4">
-                      <span
-                        className={`inline-flex rounded-full px-3 py-1 text-xs font-semibold capitalize ${statusStyles[patient.status]}`}
-                      >
-                        {patient.status}
-                      </span>
+                      <StatusBadge
+                        label={patient.status}
+                        variant={patient.status}
+                      />
                     </td>
                     <td className="px-4 py-4 text-sm text-slate-600">
                       {patient.nextAppointment}
@@ -96,7 +90,7 @@ function PatientCollection({
             key={patient.id}
             type="button"
             onClick={() => onSelectPatient(patient.id)}
-            className={`rounded-3xl border p-5 text-left shadow-sm transition ${
+            className={`cursor-pointer rounded-3xl border p-5 text-left shadow-sm transition hover:-translate-y-0.5 ${
               isSelected
                 ? 'border-sky-200 bg-sky-50'
                 : 'border-slate-200 bg-white hover:border-slate-300 hover:bg-slate-50'
@@ -115,11 +109,7 @@ function PatientCollection({
                 </div>
               </div>
 
-              <span
-                className={`inline-flex rounded-full px-3 py-1 text-xs font-semibold capitalize ${statusStyles[patient.status]}`}
-              >
-                {patient.status}
-              </span>
+              <StatusBadge label={patient.status} variant={patient.status} />
             </div>
 
             <div className="mt-5 space-y-2 text-sm text-slate-600">

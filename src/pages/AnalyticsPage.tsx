@@ -1,8 +1,10 @@
 import PageHeader from '../components/common/PageHeader';
-import AnalyticsMetricCard from '../features/analytics/components/AnalyticsMetricsCard';
-import CareInsightsCard from '../features/analytics/components/CareInsightsCard';
-import DepartmentPerformanceCard from '../features/analytics/components/DepartmentPerformanceCard';
-import TrendComparisonCard from '../features/analytics/components/TrendComparisonCard';
+import {
+  AnalyticsMetricCard,
+  CareInsightsCard,
+  DepartmentPerformanceCard,
+  TrendComparisonCard,
+} from '../features/analytics/components';
 import { useAnalyticsStore } from '../features/analytics/store';
 
 function AnalyticsPage() {

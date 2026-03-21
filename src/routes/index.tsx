@@ -1,4 +1,5 @@
 import { Navigate, useRoutes } from 'react-router-dom';
+import AppShell from '../components/layout/AppShell';
 import { ROUTES } from '../constants/routes';
 import { ProtectedRoute, PublicRoute } from '../features/auth/guards';
 import AnalyticsPage from '../pages/AnalyticsPage';
@@ -18,28 +19,25 @@ function AppRoutes() {
       ),
     },
     {
-      path: ROUTES.DASHBOARD,
       element: (
         <ProtectedRoute>
-          <DashboardPage />
+          <AppShell />
         </ProtectedRoute>
       ),
-    },
-    {
-      path: ROUTES.ANALYTICS,
-      element: (
-        <ProtectedRoute>
-          <AnalyticsPage />
-        </ProtectedRoute>
-      ),
-    },
-    {
-      path: ROUTES.PATIENT_DETAILS,
-      element: (
-        <ProtectedRoute>
-          <PatientDetailsPage />
-        </ProtectedRoute>
-      ),
+      children: [
+        {
+          path: ROUTES.DASHBOARD,
+          element: <DashboardPage />,
+        },
+        {
+          path: ROUTES.ANALYTICS,
+          element: <AnalyticsPage />,
+        },
+        {
+          path: ROUTES.PATIENT_DETAILS,
+          element: <PatientDetailsPage />,
+        },
+      ],
     },
     {
       path: '/home',

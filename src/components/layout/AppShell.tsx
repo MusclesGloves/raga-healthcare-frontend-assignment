@@ -1,10 +1,20 @@
+import { useMemo, useState } from 'react';
 import { NavLink, Outlet, useNavigate } from 'react-router-dom';
-import { LayoutDashboard, BarChart3, Users, LogOut } from 'lucide-react';
+import {
+  LayoutDashboard,
+  BarChart3,
+  Users,
+  LogOut,
+  Bell,
+} from 'lucide-react';
 import { signOut } from 'firebase/auth';
 
 import PageContainer from './PageContainer';
 import { auth } from '../../lib/firebase';
 import { useAuthStore } from '../../features/auth/store';
+import NotificationPanel from '../../features/notifications/components/NotificationPanel';
+import { useNotificationStore } from '../../features/notifications/store';
+import { showBrowserNotification } from '../../features/notifications/utils/browserNotifications';
 
 const navigationItems = [
   {
@@ -28,6 +38,20 @@ function AppShell() {
   const navigate = useNavigate();
   const user = useAuthStore((state) => state.user);
 
+  const notifications = useNotificationStore((state) => state.notifications);
+  const permission = useNotificationStore((state) => state.permission);
+  const setPermission = useNotificationStore((state) => state.setPermission);
+  const addNotification = useNotificationStore((state) => state.addNotification);
+  const markAllAsRead = useNotificationStore((state) => state.markAllAsRead);
+  const unreadCountValue = useNotificationStore((state) => state.unreadCount());
+
+  const [isNotificationPanelOpen, setIsNotificationPanelOpen] = useState(false);
+
+  const sortedNotifications = useMemo(
+    () => [...notifications],
+    [notifications],
+  );
+
   const handleLogout = async () => {
     try {
       await signOut(auth);
@@ -35,6 +59,32 @@ function AppShell() {
     } catch (error) {
       console.error('Logout failed:', error);
     }
+  };
+
+  const handleRequestPermission = async () => {
+    if (!('Notification' in window)) {
+      setPermission('unsupported');
+      return;
+    }
+
+    const result = await Notification.requestPermission();
+    setPermission(result);
+  };
+
+  const handleTriggerDemoAlert = async () => {
+    const title = 'Critical care escalation';
+    const message = 'Patient PT-1088 requires immediate ICU respiratory review.';
+
+    addNotification({
+      title,
+      message,
+      severity: 'critical',
+    });
+
+    await showBrowserNotification({
+      title,
+      body: message,
+    });
   };
 
   return (
@@ -100,6 +150,36 @@ function AppShell() {
 
           <main className="rounded-3xl bg-slate-50 p-2">
             <div className="min-h-full rounded-[1.5rem] bg-white p-4 shadow-sm">
+              <div className="mb-4 flex items-center justify-end">
+                <div className="relative">
+                  <button
+                    type="button"
+                    onClick={() =>
+                      setIsNotificationPanelOpen((current) => !current)
+                    }
+                    className="relative inline-flex h-12 w-12 items-center justify-center rounded-2xl border border-slate-200 bg-white text-slate-700 shadow-sm transition hover:bg-slate-50"
+                  >
+                    <Bell size={18} />
+                    {unreadCountValue > 0 ? (
+                      <span className="absolute -right-1 -top-1 inline-flex min-h-[22px] min-w-[22px] items-center justify-center rounded-full bg-rose-500 px-1 text-[11px] font-bold text-white">
+                        {unreadCountValue}
+                      </span>
+                    ) : null}
+                  </button>
+
+                  {isNotificationPanelOpen ? (
+                    <NotificationPanel
+                      notifications={sortedNotifications}
+                      permission={permission}
+                      unreadCount={unreadCountValue}
+                      onMarkAllAsRead={markAllAsRead}
+                      onRequestPermission={handleRequestPermission}
+                      onTriggerDemoAlert={handleTriggerDemoAlert}
+                    />
+                  ) : null}
+                </div>
+              </div>
+
               <Outlet />
             </div>
           </main>

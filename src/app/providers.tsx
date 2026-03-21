@@ -9,17 +9,13 @@ function AppProviders({ children }: PropsWithChildren) {
   const setAuthReady = useAuthStore((state) => state.setAuthReady);
 
   useEffect(() => {
-    console.log('AppProviders mounted');
-    console.log('Firebase auth instance:', auth);
 
     const unsubscribe = onAuthStateChanged(auth, (user) => {
-      console.log('onAuthStateChanged fired:', user);
       setUser(user);
       setAuthReady(true);
     });
 
     return () => {
-      console.log('AppProviders unmounted');
       unsubscribe();
     };
   }, [setAuthReady, setUser]);
